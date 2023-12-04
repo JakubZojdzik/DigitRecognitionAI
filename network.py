@@ -27,7 +27,15 @@ class Network:
             anow = self.activation(z)
             a.append(anow)
 
-        
+        # Backpropagation
+        dera = np.multiply((a[-1] - expected_out) * 2)
+        self.biases_updates[-1] = dera * self.a_derivative(z[-1])
+        self.weights_updates[-1] = np.dot(dera * self.a_derivative(z[-1]), a[-2].transpose())
+
+        for l in range(self.num_layers-3, -1, -1):
+            dera = np.dot(self.weights[l+1].transpose(), dera)
+            self.biases_updates[l] = dera * self.a_derivative(z[l])
+            self.weights_updates[l] = np.dot(dera * self.a_derivative(z[l]), a[l].transpose())
 
 n = Network([2, 3, 2], sigmoid, sigmoid_deriv)
 print(n.biases)
