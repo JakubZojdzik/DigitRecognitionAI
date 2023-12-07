@@ -20,7 +20,7 @@ class Network:
         self.activation = activation
         self.d_activation = d_activation
 
-        self.biases = [np.random.randn(size, 1) for size in sizes[1:]]
+        self.biases = [np.random.randn(size, 1) / np.sqrt(size) for size in sizes[1:]]
         self.weights = [np.random.randn(size2, size1) / np.sqrt(size1) for size1, size2 in zip(sizes[:-1], sizes[1:])]
 
         self.biases_upd = [np.zeros(b.shape) for b in self.biases]
@@ -88,4 +88,4 @@ r = Reader('tests/train-images-idx3-ubyte', 'tests/train-labels-idx1-ubyte')
 
 t = r.all_tests()
 print(len(t))
-n.train(t, 4, 64, 0.1)
+n.train(t, 15, 64, 0.1)
