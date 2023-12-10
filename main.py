@@ -14,7 +14,7 @@ def relu(z):
 def d_relu(z):
     return np.where(z > 0, 1, 0)
 
-n = Network([784, 32, 32, 10], relu, d_relu)
+n = Network([784, 16, 16, 10], relu, d_relu)
 r = Reader('tests/train-images-idx3-ubyte', 'tests/train-labels-idx1-ubyte')
 
 t = r.all_tests()

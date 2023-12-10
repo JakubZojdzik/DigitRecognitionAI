@@ -33,7 +33,6 @@ class Network:
 
     def backprop(self, y):
         for i in range(self.num_layers - 1, 0, -1):
-            # print(i, self.num_layers - 1)
             if i == self.num_layers - 1:
                 delta = self.d_softmax_cross_entropy(self.a_arr[i], y)
             else:
@@ -73,7 +72,7 @@ class Network:
                 if(itr % 100 == 0):
                     print(f"Mini batch: {mini_correct}/{len(batch)}")
 
-            print(f"Epoch {i}:  {correct}/{len(train_data)}")
+            print(f"Epoch {i}: {np.round(correct*100/len(train_data))}% ")
 
     @staticmethod
     def softmax(z):
