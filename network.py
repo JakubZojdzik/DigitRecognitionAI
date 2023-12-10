@@ -1,17 +1,9 @@
 import numpy as np
-from reader import Reader
 
-def sigmoid(z):
-    return 1.0 / (1.0 + np.exp(-z))
-
-def d_sigmoid(z):
-    return sigmoid(z) * (1 - sigmoid(z))
-
-def relu(z):
-    return np.maximum(0, z)
-
-def d_relu(z):
-    return np.where(z > 0, 1, 0)
+def cross_entropy(t,p):
+    t = np.float_(t)
+    p = np.float_(p)
+    return -np.sum(t * np.log(p) + (1 - t) * np.log(1 - p))
 
 class Network:
     def __init__(self, sizes, activation, d_activation):
@@ -32,17 +24,22 @@ class Network:
     def feedforward(self, a):
         self.a_arr = [a]
         self.z_arr = [self.activation(a)]
+        layer_itr = 1
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, a) + b
-            a = self.activation(z)
+            if layer_itr != self.num_layers - 1:
+                a = self.activation(z)
+            else:
+                a = self.softmax(z)
             self.z_arr.append(z)
             self.a_arr.append(a)
+            layer_itr += 1
         return a
 
     def backprop(self, y):
         for i in range(self.num_layers - 1, 0, -1):
             if i == self.num_layers - 1:
-                delta = (self.a_arr[i] - y) * self.d_activation(self.z_arr[i])
+                delta = self.d_softmax(self.z_arr[i]) * (self.a_arr[i] - y)
             else:
                 delta = np.dot(self.weights[i].T, delta) * self.d_activation(self.z_arr[i])
             self.biases_upd[i-1] = delta
@@ -82,10 +79,17 @@ class Network:
 
             print(f"Epoch {i}:  {correct}/{len(train_data)}")
 
+    @staticmethod
+    def softmax(z):
+        return np.exp(z) / np.sum(np.exp(z), axis=0)
 
-n = Network([784, 16, 16, 10], relu, d_relu)
-r = Reader('tests/train-images-idx3-ubyte', 'tests/train-labels-idx1-ubyte')
-
-t = r.all_tests()
-print(len(t))
-n.train(t, 15, 64, 0.1)
+    @staticmethod
+    def d_softmax(a):
+        res = np.zeros((len(a), len(a)))
+        for i in range(len(a)):
+            for j in range(len(a)):
+                if i == j:
+                    res[i][j] = a[i] * (1 - a[i])
+                else:
+                    res[i][j] = -a[i] * a[j]
+        return res
