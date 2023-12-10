@@ -15,7 +15,7 @@ python main.py
 
 ## Dataset
 
-The MNIST dataset is used for training and testing the digit recognition model. It can be downloaded from http://yann.lecun.com/exdb/mnist. In order to create some more training data, `Reader` moves images by 1 in different directions and save them as different images.
+The MNIST dataset is used for training and testing the digit recognition model. It can be downloaded from http://yann.lecun.com/exdb/mnist. In order to create some more training data, `Reader` moves images by 1 pixel in different directions and save them as different inputs.
 
 ## Results
 
