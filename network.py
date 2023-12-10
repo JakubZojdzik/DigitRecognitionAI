@@ -1,10 +1,5 @@
 import numpy as np
 
-def cross_entropy(t,p):
-    t = np.float_(t)
-    p = np.float_(p)
-    return -np.sum(t * np.log(p) + (1 - t) * np.log(1 - p))
-
 class Network:
     def __init__(self, sizes, activation, d_activation):
         self.sizes = sizes
@@ -38,8 +33,9 @@ class Network:
 
     def backprop(self, y):
         for i in range(self.num_layers - 1, 0, -1):
+            # print(i, self.num_layers - 1)
             if i == self.num_layers - 1:
-                delta = self.d_softmax(self.z_arr[i]) * (self.a_arr[i] - y)
+                delta = self.d_softmax_cross_entropy(self.a_arr[i], y)
             else:
                 delta = np.dot(self.weights[i].T, delta) * self.d_activation(self.z_arr[i])
             self.biases_upd[i-1] = delta
@@ -84,12 +80,5 @@ class Network:
         return np.exp(z) / np.sum(np.exp(z), axis=0)
 
     @staticmethod
-    def d_softmax(a):
-        res = np.zeros((len(a), len(a)))
-        for i in range(len(a)):
-            for j in range(len(a)):
-                if i == j:
-                    res[i][j] = a[i] * (1 - a[i])
-                else:
-                    res[i][j] = -a[i] * a[j]
-        return res
+    def d_softmax_cross_entropy(z, y):
+        return z - y
