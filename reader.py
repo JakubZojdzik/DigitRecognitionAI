@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 class Reader:
     def __init__(self, file_images, file_labels):
@@ -30,15 +31,23 @@ class Reader:
 
             pixels = pixels.reshape((28, 28))
 
-            pixels = np.roll(pixels, 1, axis=1)
-            res.append((pixels.reshape((784, 1)), label))
+            combs = copy.deepcopy(pixels)
+            combs = np.roll(combs, 1, axis=1)
+            combs[:, -1] = 0
+            res.append((combs.reshape((784, 1)), label))
 
-            pixels = np.roll(pixels, -2, axis=1)
-            res.append((pixels.reshape((784, 1)), label))
+            combs = copy.deepcopy(pixels)
+            combs = np.roll(combs, -1, axis=1)
+            combs[:, 0] = 0
+            res.append((combs.reshape((784, 1)), label))
 
-            pixels = np.roll(pixels, 1, axis=0)
-            res.append((pixels.reshape((784, 1)), label))
+            combs = copy.deepcopy(pixels)
+            combs = np.roll(combs, 1, axis=0)
+            combs[-1, :] = 0
+            res.append((combs.reshape((784, 1)), label))
 
-            pixels = np.roll(pixels, -2, axis=0)
-            res.append((pixels.reshape((784, 1)), label))
+            combs = copy.deepcopy(pixels)
+            combs = np.roll(combs, -1, axis=0)
+            combs[0, :] = 0
+            res.append((combs.reshape((784, 1)), label))
         return res
