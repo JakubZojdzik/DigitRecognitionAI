@@ -28,26 +28,21 @@ class Reader:
             pixels = pixels / 255.0
             label = int.from_bytes(self.file_labels.read(1), 'big')
             res.append((pixels, label))
-
             pixels = pixels.reshape((28, 28))
 
-            combs = copy.deepcopy(pixels)
-            combs = np.roll(combs, 1, axis=1)
-            combs[:, -1] = 0
-            res.append((combs.reshape((784, 1)), label))
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    combs = copy.deepcopy(pixels)
+                    combs = np.roll(combs, i, axis=0)
+                    combs = np.roll(combs, j, axis=1)
+                    if(i == 1):
+                        combs[0, :] = 0
+                    elif(i == -1):
+                        combs[-1, :] = 0
+                    if(j == 1):
+                        combs[:, 0] = 0
+                    elif(j == -1):
+                        combs[:, -1] = 0
+                    res.append((combs.reshape((784, 1)), label))
 
-            combs = copy.deepcopy(pixels)
-            combs = np.roll(combs, -1, axis=1)
-            combs[:, 0] = 0
-            res.append((combs.reshape((784, 1)), label))
-
-            combs = copy.deepcopy(pixels)
-            combs = np.roll(combs, 1, axis=0)
-            combs[-1, :] = 0
-            res.append((combs.reshape((784, 1)), label))
-
-            combs = copy.deepcopy(pixels)
-            combs = np.roll(combs, -1, axis=0)
-            combs[0, :] = 0
-            res.append((combs.reshape((784, 1)), label))
         return res
