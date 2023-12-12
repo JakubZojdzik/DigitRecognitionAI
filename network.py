@@ -1,7 +1,7 @@
 import numpy as np
 
 class Network:
-    def __init__(self, sizes, activation, d_activation):
+    def __init__(self, sizes, activation, d_activation, save_path, load_filename=None):
         self.sizes = sizes
         self.num_layers = len(sizes)
         self.activation = activation
@@ -13,8 +13,13 @@ class Network:
         self.biases_upd = [np.zeros(b.shape) for b in self.biases]
         self.weights_upd = [np.zeros(w.shape) for w in self.weights]
 
+        self.save_path = save_path
+
         self.a_arr = []
         self.z_arr = []
+
+        if load_filename:
+            self.load(load_filename)
 
     def feedforward(self, a):
         self.a_arr = [a]
@@ -73,6 +78,25 @@ class Network:
                     print(f"Mini batch: {mini_correct}/{len(batch)}")
 
             print(f"Epoch {i}: {np.round(correct*100/len(train_data))}% ")
+            self.save(self.save_path)
+        self.save(self.save_path)
+
+    def save(self, filename):
+        f = open(filename, 'wb')
+        for w in self.weights:
+            np.save(f, w)
+        for b in self.biases:
+            np.save(f, b)
+        f.close()
+
+    def load(self, filename):
+        f = open(filename, 'rb')
+        for i in range(len(self.weights)):
+            self.weights[i] = np.load(f)
+        for i in range(len(self.biases)):
+            self.biases[i] = np.load(f)
+        f.close()
+
 
     @staticmethod
     def softmax(z):
